@@ -1,0 +1,1522 @@
+SQL practice
+
+1. creating our first database
+our first sql query
+ 
+CREATE DATABASE db_name;
+DROP DATABASE db_name;
+
+create database college;
+
+----------------------------------------------------------
+
+
+
+2. creating our first table
+use db_name;
+
+create table table_name (
+	column_name1 datatype constraint,
+	column_name2 datatype constraint,
+	column_name2 datatype constraint
+);
+
+# CREATE TABLE student(
+	id INT PRIMARY KEY,
+	name VARCHAR(50),
+	age INT NOT NULL
+);
+
+INSERT INTO student VALUES(1, 'ALU', 26);
+INSERT INTO student VALUES(2, 'MAYALU', 20);
+
+# use single quote in smss for string
+
+SELECT * FROM student;
+
+/* multiple
+line
+comment
+*/
+
+-- single line comment
+
+/* datatype
+char,varchar,blob,int,tinyint,bigint,bit,float,double,boolean,date,year
+*/
+
+----------------------------------------------------------
+
+
+3. sql datatypes
+signed and unsigned
+
+TINYINT UNSIGNED (0 to 255); we use unsigned to increase range
+TINYINT (-128 to 127)
+
+
+
+----------------------------------------------------------
+
+
+
+
+4. types of SQL Commands
+DDL (data definition language): create, alter, rename, truncate & drop
+DQL (data query language): select
+DML (data manipulation language):  insert,update & delete
+DCL (data control language): grant & revoke permission to users
+TCL (transaction control language): start transaction, commit, rollback
+
+
+-- in mysql
+-- show databases;
+-- show tables;
+
+--in smss
+/* SELECT name 
+FROM sys.databases;
+*/
+
+/* --most common
+SELECT * 
+FROM INFORMATION_SCHEMA.TABLES;
+we must be inside database
+--use college;
+
+-- show only user tables
+SELECT name
+FROM sys.tables;
+*/
+
+USE college;
+
+SELECT name
+FROM sys.databases;
+
+
+SELECT name
+FROM sys.tables;
+
+SELECT * 
+FROM INFORMATION_SCHEMA.TABLES;
+
+
+
+
+# show tables
+
+USE your_database_name;  -- select your database
+GO
+
+SELECT TABLE_NAME 
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_TYPE = 'BASE TABLE';
+
+
+# GO is the batch separator
+The first batch creates the database.
+The second batch switches to it.
+The third batch creates the table.
+
+CREATE DATABASE college;
+GO
+
+USE college;
+GO
+
+CREATE TABLE student(
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT NOT NULL
+);
+GO
+
+
+-------------------------------------------------------------------------------------------
+
+
+
+5. table releted queries
+
+
+/* 1. CREATE
+
+CREATE TABLE table_name(
+    column_name1 datatype constraint,
+    column_name2 datatype constraint,
+
+   );
+
+ CREATE TABLE student (
+    rollno INT PRIMARY KEY,
+    name VARCHAR(50)
+  );
+
+*/
+
+DROP TABLE student;
+
+CREATE TABLE student(
+    rollno INT PRIMARY KEY,
+    name VARCHAR(50)
+    );
+
+-- 2. SELECT & VIEW ALL COLUMNS
+
+SELECT * FROM student;
+
+
+-- 3. INSERT
+/*
+
+INSERT INTO table_name
+(colname1, colname2)
+VALUES
+(COL1_V1, COL2_V1),
+(COL1_V2, COL2_V2);
+
+*/
+
+INSERT INTO student
+(rollno, name)
+VALUES
+(101, 'Karan'),
+(102, 'Arjun');
+
+
+-- to add separately 
+INSERT INTO student
+(rollno, name)
+VALUES
+(103, 'Ram');
+
+
+ -- we can also write in single line
+ INSERT INTO student VALUES (104, 'Hari');
+
+
+ /* 
+ practice qs 1
+ qs : create a database for your company named XYZ.
+
+ step1 : create a table inside this DB to store employee info (id, name and salary).
+ step2 : add following information in the DB:
+    1,"adam",25000
+    2,"bob",30000
+    3,"casey",40000
+ step3 : select & view all your table data.
+
+*/
+
+CREATE DATABASE xyz_company;
+
+USE xyz_company;
+
+CREATE TABLE employee(
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    salary INT NOT NULL
+
+);
+
+INSERT INTO employee
+(id,name,salary)
+VALUES
+(1, 'Adam', 25000),
+(2, 'Bob', 30000),
+(3, 'Casey', 40000);
+
+SELECT * FROM employee;
+
+
+
+
+-------------------------------------------------------------------------------------------
+
+
+/* keys
+1. primary key
+- it is a column or set of columns in a table that uniquely identifies each row. (a unique id). 
+- there is only 1 PK & it should be NOT null.
+
+2. foreign key
+- a foreign key is a column or set of columns in a table that refers to the primary key of another table
+- there can be multiple FKs
+- FKs can have duplicate & null values.
+*/
+
+
+
+-------------------------------------------------------------------------------------------
+
+
+/* constraints
+- sql constraints are used to specify rules for data in a table.
+1. NOT NULL - columns cannot have a null value ; col1 int NOT NULL
+2. UNIQUE - all values in column are different ; col2 int UNIQUE
+3. PRIMARY KEY - makes a column unique & not null but used only for one ; id int PRIMARY KEY
+    
+    CREATE TABLE temp (
+        id int not null,
+        PRIMARY KEY (id)
+        );
+
+    or
+ 
+CREATE TABLE temp (
+    id int PRIMARY KEY
+);
+
+    or
+
+ for two primary key
+CREATE TABLE temp (
+    id INT,
+    name VARCHAR(50),
+    age INT,
+    PRIMARY KEY (id, name)
+);
+
+
+
+*/
+
+-- even though there is two primary key ,their's combination is unique
+
+
+CREATE TABLE temp1 (
+    id INT UNIQUE
+);
+
+
+INSERT INTO temp1 VALUES (101);
+
+ -- INSERT INTO temp1 VALUES (101);
+
+SELECT * FROM temp1;
+
+
+/*
+5. FOREIGN KEY - prevent actions that would destroy links between tables
+
+CREATE TABLE temp (
+    cust_id int,
+    FOREIGN KEY (cust_id) references customer(id)
+);
+
+6. DEFAULT - sets the default value of a column
+
+    salary INT DEFAULT 25000
+
+*/
+CREATE TABLE emp (
+    id INT,
+    salary INT DEFAULT 25000);
+
+INSERT INTO emp (id) VALUES (101);
+
+SELECT * FROM emp;
+-- by default salary comes 25000
+
+
+/* 
+7. CHECK - it can limit the values allowed in a column
+
+    CREATE TABLE city (
+    id INT PRIMARY KEY,
+    city VARCHAR(50),
+    age INT,
+    CONSTRAINT age_check CHECK (age >= 18 AND city='London')
+
+    );
+
+    CREATE TABLE newTab (
+        age INT CHECK (age >= 18)
+    );
+*/
+
+
+/*
+-- Create this sample table
+
+CREATE DATABASE college;
+USE college;
+
+CREATE TABLE student (
+    rollno INT PRIMARY KEY,
+    name VARCHAR (50),
+    marks INT NOT NULL,
+    grade VARCHAR(1),
+    city VARCHAR(20)
+);
+
+-- Insert this data
+
+INSERT INTO student
+(rollno, name, marks, grade, city)
+VALUES
+(101, 'anil', 78, 'C', 'Pune'),
+(102, 'sunil', 89, 'A', 'Dhune'),
+(103, 'kapil', 45, 'B', 'Sune'),
+(104, 'sabin', 68, 'D', 'Kune'),
+(105, 'dhruba', 97, 'A', 'Lune'),
+(106, 'santosh', 85, 'B', 'Jhune');
+
+*/
+
+
+DROP DATABASE college;
+
+CREATE DATABASE college;
+ 
+USE college;
+
+CREATE TABLE student1(
+    rollno INT PRIMARY KEY,
+    name VARCHAR (50),
+    marks INT NOT NULL,
+    grade VARCHAR(1),
+    city VARCHAR(20)
+);
+
+INSERT INTO student1
+(rollno, name, marks, grade, city)
+VALUES
+(101, 'anil', 78, 'C', 'Pune'),
+(102, 'sunil', 89, 'A', 'Dhune'),
+(103, 'kapil', 45, 'B', 'Sune'),
+(104, 'sabin', 68, 'D', 'Kune'),
+(105, 'dhruba', 97, 'A', 'Lune'),
+(106, 'santosh', 85, 'B', 'Jhune');
+
+SELECT * FROM student1;
+
+
+/*  
+ 
+Select in Detail - used to select any data from the database
+
+Basic Syntax - SELECT col1, col2 FROM table_name;
+To Select All - SELECT * FROM table_name; 
+
+*/
+
+
+SELECT name, marks FROM student1;
+
+SELECT * FROM student1;
+
+SELECT city FROM student1;
+
+SELECT DISTINCT city FROM student1;  -- remove duplicate
+
+
+
+
+/* 
+
+Where Clause - To define some conditions
+
+SELECT col1 , col2 FROM table_name
+WHERE conditions;
+
+SELECT * FROM student WHERE marks > 80;
+SELECT * FROM student WHERE city = 'MUMBAI';
+
+*/
+
+SELECT * FROM student1 WHERE marks > 80;
+
+SELECT * FROM student1 WHERE city = 'Dhune';
+
+--  for multiple condition
+
+SELECT * FROM student1 WHERE marks > 80 AND city = 'Dhune';
+
+
+
+
+
+/* 
+
+WHERE Clause - using operators in WHERE
+
+1. Arithmetic Operators: =+(addition), -(substraction), *(multiplication), /(division), %(modulus)
+2. Comparison Operators: =(equal to), !=(not equal to), >, >=, <, <=
+3. Logical Operators: AND, OR, NOT, IN, BETWEEN, ALL, LIKE, ANY
+4. Bitwise Operators: & (Bitwise AND), | (Bitwise OR)
+
+*/
+
+SELECT * FROM student1 WHERE marks+10 > 100;
+SELECT * FROM student1 WHERE marks = 97;
+
+/*
+
+Operators
+
+1. AND - to check for both conditions to be true
+SELECT * FROM student1 WHERE marks > 80 AND city = 'Mumbai';
+
+2. OR - to check for one of the conditions to be true
+SELECT * FROM student WHERE marks > 90 OR city = 'Mumbai';
+
+*/
+
+SELECT * FROM student1 WHERE marks > 90 OR city = 'Mumbai';
+
+
+/* 
+
+3. Between - selects for a given range
+SELECT * FROM student1 WHERE marks BETWEEN 80 AND 90;  # 80 and 90 included
+
+4. In - matches any value in the list
+SELECT * FROM student WHERE city IN ('Delhi','Mumbai');
+
+5. NOT - to negate the given condition ; works in opposite of IN
+SELECT * FROM student WHERE city NOT IN ('Delhi','Mumbai');
+
+*/
+
+SELECT * FROM student1 WHERE marks BETWEEN 80 AND 90;
+SELECT * FROM student1 WHERE city IN ('Pune','Dhune','lune');
+SELECT * FROM student1 WHERE city NOT IN ('Pune');
+
+/*
+
+-- in mysql
+limit clause - sets an upper limit on number of (tuples) rows to be returned
+SELECT * FROM student1 lIMIT 3;
+
+SELECT col1, col2 FROM table_name LIMIT number;
+
+
+--in smss
+SELECT TOP 5 *
+FROM student;
+
+
+*/
+
+SELECT TOP 5 * 
+FROM student1 
+WHERE marks > 80;
+
+Order By Clause - to sort in ascending (ASC) or descending order (DESC)
+
+SELECT * FROM student
+ORDER BY city ASC;
+
+
+SELECT col1, col2 FROM table_name
+ORDER BY col_name(s) ASC;
+
+*/
+
+SELECT TOP 3 * 
+FROM student1 
+ORDER BY marks DESC;
+
+/*
+
+Aggregate functions - aggregate functions perform a calculation on a set of values, and return a single value.
+- count()
+- max()
+- min()
+- sum()
+- avg()
+
+- Get maximum marks
+SELECT max(marks)
+FROM student;
+
+- Get average marks
+SELECT avg(marks)
+FROM student;
+
+*/
+
+SELECT MAX(marks)
+FROM student1;
+
+SELECT MIN(marks)
+FROM student1;
+
+SELECT AVG(marks)
+FROM student1;
+
+SELECT COUNT(rollno)
+FROM student1;
+
+/*
+
+Group By clause - groups rows that have the same values into summary rows. It collects data from multiple records and groups the result by one or more column.
+
+*Generally we use group by with some aggregation function.
+
+count number of students in each city
+
+SELECT city, count(name)
+FROM student
+GROUP BY city;
+
+*/
+
+
+SELECT city, count(rollno)
+FROM student1
+GROUP BY city;
+
+SELECT city,name, count(name)
+FROM student1
+GROUP BY city, name;
+
+SELECT city, avg(marks)
+FROM student1
+GROUP BY city;
+
+
+
+/*
+
+write the query to find avg marks in each city in ascending order
+
+*/
+
+
+USE college;
+
+SELECT city, avg(marks)
+FROM student1
+GROUP BY city
+ORDER BY avg(marks);  -- by default ASC
+
+/*
+ practice question 2
+
+ */
+
+ SELECT DISTINCT city FROM student1;
+
+ SELECT grade, count(rollno)
+ FROM student1
+ GROUP BY grade
+ ORDER BY grade;
+
+/* Having Clause
+
+- similar to where i.e. applies some condition on rows.
+- used when we want to apply any condition after grouping.
+
+
+- count number of students in each city where max marks cross 90.
+
+SELECT count (name), city
+FROM student
+GROUP BY city
+HAVING max(marks) > 90;
+
+*/
+
+SELECT city, count(rollno)
+FROM student1
+GROUP BY city
+HAVING max(marks) > 90; 
+
+
+
+/*
+General Order
+
+SELECT column(s)  
+FROM table_name
+WHERE condition   - for rows
+GROUP BY column(s)
+HAVING condition    - for groups
+ORDER BY column(s) ASC;
+
+*/
+
+SELECT city
+FROM student1
+WHERE grade = 'A'
+GROUP BY city
+HAVING MAX(marks) >= 90
+ORDER BY city ASC;
+
+
+
+/* Table related queries
+
+- update (to update existing rows)
+
+UPDATE table_name
+SET col1 = val1, col2 = val2
+WHERE condition;
+
+
+UPDATE student
+SET GRADE = 'O'
+WHERE grade = 'A';
+
+
+*/
+
+/*  
+-- To off safe mode
+SET SQL_SAFE_UPDATES = 0;
+
+*/
+
+
+
+
+UPDATE student1
+SET grade = 'O'
+WHERE grade = 'A';
+
+
+UPDATE student1
+SET marks = 82
+WHERE rollno = 105;
+
+
+UPDATE student1
+SET grade = 'B'
+WHERE marks BETWEEN 80 AND 90;
+
+
+UPDATE student1
+SET marks = marks + 1;
+
+SELECT * FROM student1;
+
+
+
+/* 
+Delete (to delete existing rows)
+
+DELECT FROM table_name
+WHERE condition;
+
+
+DELETE FROM student
+WHERE marks < 33;
+
+
+*/
+
+UPDATE student1
+SET marks = 12
+WHERE rollno = 105;
+
+SELECT * FROM student1;
+
+
+
+DELETE FROM student1
+WHERE marks < 33;
+
+SELECT * FROM student1;
+
+
+DELETE FROM student;  -- delete entire data of the table
+
+
+
+
+
+/*
+
+Revisiting FK (foreign key)
+
+*/
+CREATE DATABASE school;
+
+
+
+CREATE TABLE dept (
+    id INT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+CREATE TABLE teacher (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES dept(id)
+
+);
+USE college;
+
+SELECT * FROM dept;
+
+/*
+cascading for FK
+
+1. on delete cascade
+- when we create a foreign key using this option, it deletes the referencing rows in the child table when the referenced row is deleted in the parent table which has a primary key.
+
+2. on update cascade
+- when we create a foreign key using UPDATE CASCADE the referencing rows are updated in the child table when the referenced row is updated in the parent table which has a primary key.
+
+
+CREATE TABLE student(
+    id INT PRIMARY KEY,
+    courseID INT,
+    FOREIGN KEY(courseID) REFERENCES course(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+*/
+USE college;
+
+CREATE TABLE dept1 (
+    id INT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+INSERT INTO dept1
+VALUES
+(101, 'english'),
+(102, 'IT');
+
+SELECT * FROM dept1;
+
+CREATE TABLE teacher1 (
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES dept(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
+-- NOW If anything changes in dept table that changes also applies to teacher table
+
+
+INSERT INTO teacher1
+VALUES
+(101, 'Adam', 101),
+(102, 'Eve', 102);
+
+SELECT * FROM teacher1;
+
+DROP TABLE teacher1;
+
+
+
+/* 
+alter (to change the schema), # schema are design (columns, datatypes, constraints)
+
+# ADD column 
+ALTER TABLE table_name
+ADD column_name datatype constraint;
+
+
+# DROP Column
+ALTER TABLE table_name
+DROP COLUMN column_name;
+
+# RENAME Table
+ALTER TABLE table_name
+RENAME TO new_table_name;
+
+*/
+CREATE DATABASE university;
+
+
+
+/*
+CHANGE Column (rename)
+ALTER TABLE table_name)
+CHANGE COLUMN old_name new_name new_datatype new_constraint;
+
+
+
+MODIFY Column (modify datatype/constraint)
+ALTER TABLE table_name
+MODIFY col_name new_datatype new_constraint;
+
+*/
+
+
+
+
+
+CREATE TABLE student4(
+    rollno INT PRIMARY KEY,
+    name VARCHAR (50),
+    marks INT NOT NULL,
+    grade VARCHAR(1),
+    city VARCHAR(20)
+);
+
+
+INSERT INTO student4
+(rollno, name, marks, grade, city)
+VALUES
+(101, 'anil', 78, 'C', 'Pune'),
+(102, 'sunil', 89, 'A', 'Dhune'),
+(103, 'kapil', 45, 'B', 'Sune'),
+(104, 'sabin', 68, 'D', 'Kune'),
+(105, 'dhruba', 97, 'A', 'Lune'),
+(106, 'santosh', 85, 'B', 'Jhune');
+
+SELECT * FROM student4;
+
+
+
+
+ALTER TABLE student4
+ADD age INT;
+
+ALTER TABLE student4
+DROP COLUMN age;
+
+-- same with the rename
+
+
+/*
+
+CHANGE Column (rename)
+ALTER TABLE table_name
+CHANGE COLUMN old_name new_name new_datatype new_constraint;
+
+
+MODIFY Column (modify datatype/constraint)
+ALTER TABLE table_name
+MODIFY col_name new_datatype new_constraint;
+
+
+-- IN MYSQL
+-- ADD Column
+
+ALTER TABLE student
+ADD COLUMN age INT NOT NULL DEFAULT 19;
+
+
+
+-- MODIFY Column
+
+ALTER TABLE student
+MODIFY age VARCHAR(2),
+
+-- CHANGE Column (rename)
+
+ALTER TABLE student
+CHANGE age stu_age INT;
+
+-- DROP Column
+
+ALTER TABLE student
+DROP COLUMN stu_age;
+
+-- RENAME Table
+
+ALTER TABLE student
+RENAME TO stu;
+
+*/
+
+/*
+-- IN SMSS
+-- ADD Column
+ALTER TABLE table_name
+ADD column_name data_type;
+
+
+-- modify column
+ALTER TABLE table_name
+ALTER COLUMN column_name new_data_type;
+
+
+-- change column, -- no change in smss
+Use sp_rename + ALTER COLUMN if needed.
+
+-- rename
+--bonus
+EXEC sp_rename 'old_name', 'new_name';
+
+or
+
+EXEC sp_rename 'table_name.old_name', 'new_name', 'COLUMN';
+
+--modify
+ALTER TABLE table_name
+ALTER COLUMN new_name new_data_type;
+
+
+-- drop column
+ALTER TABLE table_name
+DROP COLUMN column_name;
+
+
+
+-- rename column
+EXEC sp_rename 'table_name.old_name', 'new_name', 'COLUMN';
+
+
+
+
+
+*/
+
+-- add
+ALTER TABLE student4
+ADD ages INT NOT NULL DEFAULT 19;
+
+SELECT * FROM student4;
+
+-- modify
+ALTER TABLE student4
+ALTER COLUMN age VARCHAR(2);  -- WE DONT use MODIFY in smss , we use ALTER
+
+/* if we use age = 100 ,
+it will throw an error cause VARCHAR(2)
+*/
+
+
+-- alter
+ALTER TABLE student4
+-- no change in smss
+-- Use sp_rename + ALTER COLUMN if needed.
+
+
+-- drop 
+ALTER TABLE student4
+DROP COLUMN age ;
+
+SELECT * FROM student4
+
+-- rename
+--EXEC sp_rename 'old_name', 'new_name';
+
+
+EXEC sp_rename 'student4', 'student_haru';
+
+
+
+
+
+/*
+
+table related queries (contd.)
+- truncate (to delete table's data)
+
+TRUUNCATE TABLE table_name;
+
+UPDATE student
+SET grade = 'O'
+WHERE grade = 'A';
+
+*/
+
+TRUNCATE TABLE student4;
+
+SELECT * FROM student4;
+
+
+
+INSERT INTO student4
+(rollno, name, marks, grade, city)
+VALUES
+(101, 'anil', 78, 'C', 'Pune'),
+(102, 'sunil', 89, 'A', 'Dhune'),
+(103, 'kapil', 45, 'B', 'Sune'),
+(104, 'sabin', 68, 'D', 'Kune'),
+(105, 'dhruba', 97, 'A', 'Lune'),
+(106, 'santosh', 85, 'B', 'Jhune');
+
+SELECT * FROM student4;
+
+/*
+practice Qs
+1. in the student table:
+a. change the name of column 'name' to 'full_name'.
+b. delete all the students who scored marks less than 80.
+c. delete the column for grades.
+
+*/
+--1 answer
+ALTER TABLE student
+EXEC sp_rename 'student4', 'student_haru';
+
+SELECT * FROM student_haru;
+
+--2 answer
+DElETE FROM student_haru
+WHERE marks < 80;
+
+
+--3 answer
+ALTER TABLE student_haru
+DROP COLUMN grade;
+
+
+/*
+
+joins in sql
+- join is used to combine rows from two or more tables, based on a related column between them.
+- to perform join fk is not compulsary
+
+# types of join 
+1. inner join - intersection
+2. outer join
+    a. left join - left + intersection
+    b. right join - right + intersection
+    c. full join - left + intersection + right
+
+1. inner join
+- returns records that have matching values in both tables
+
+SYNTAX
+    SELECT column(s)
+    FROM tableA
+    INNER JOIN tableB
+    ON tableA.col_name = tableB.col_name;
+
+
+
+*/
+CREATE DATABASE innerrjoin;
+USE innerrjoin;
+
+CREATE TABLE student(
+    id INT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+INSERT INTO student (id, name)
+VALUES
+(101, 'ADAM'),
+(102, 'BOB'),
+(103, 'CASEY');
+
+CREATE TABLE course(
+    id INT PRIMARY KEY,
+    course VARCHAR(50)
+);
+
+INSERT INTO course (id, course)
+VALUES
+(102, 'ENGLISH'),
+(105, 'MATHS'),
+(103, 'SCIENCE'),
+(107, 'COMPUTER SCIENCE');
+
+SELECT * FROM course;
+SELECT * FROM student;
+
+SELECT * 
+FROM course
+INNER JOIN student
+ON course.id = student.id;
+
+
+/*
+we can also use alias
+alias - alternate name
+
+SELECT * 
+FROM course as c
+INNER JOIN student as s
+ON c.id = s.id
+*/
+-- result will be same
+
+/*
+2. left join
+- returns all records from the left table, and the matched records from the right table
+
+syntax
+    SELECT column(s)
+    FROM tableA
+    LEFTJOIN tableB
+    ON tableA.col_name = tableB.col_name;
+
+    */
+SELECT * 
+FROM student as s
+LEFT JOIN course as c
+ON s.id = c.id;
+
+
+/*
+3. right join
+- returns all records from the right table, and the matched records from the left table
+
+syntax
+    SELECT column(s)
+    FROM tableA
+    RIGHT JOIN tableB
+    ON tableA.col_name = tableB.col_name;
+*/
+
+SELECT * 
+FROM student as s
+RIGHT JOIN course as c
+ON s.id = c.id;
+
+/*
+4. outer join
+- returns all records when there is a match in either left or right table
+
+syntax in smss
+    SELECT *
+    FROM table1
+    FULL OUTER JOIN table2
+    ON table1.column = table2.column;
+
+
+syntax in mysql
+- there is no direct support in mysql
+- so we do (left join union right join)
+    
+    SELECT * FROM student as a
+    LEFT JOIN course as b
+    ON a.id = b.id
+    UNION
+    SELECT * FROM course as b
+    RIGHT JOIN course as b
+    ON a.id = b.id;
+
+*/
+
+SELECT *
+FROM student
+FULL OUTER JOIN course
+ON student.id = course.id;
+
+
+/*
+
+think and ans
+qs: write sql commands to display the left and right exclusive join:
+
+syntax for left exclusive join
+    SELECT *
+    FROM student as a
+    LEFT JOIN course as b
+    ON a.id = b.id
+    WHERE b.id IS NULL;
+
+*/
+SELECT *
+    FROM student as a
+    LEFT JOIN course as b
+    ON a.id = b.id
+    WHERE b.id IS NULL;
+
+
+/* syntax for right exclusive join
+    SELECT *
+    FROM student as a
+    RIGHT JOIN course as b
+    ON a.id = b.id
+    WHERE a.id IS NULL;
+*/
+
+    SELECT *
+    FROM student as a
+    RIGHT JOIN course as b
+    ON a.id = b.id
+    WHERE a.id IS NULL;
+
+
+
+/*
+full exclusive join
+
+syntax in MySQL does NOT support FULL OUTER JOIN, so we simulate it using:
+
+LEFT EXCLUSIVE
+
+UNION
+
+RIGHT EXCLUSIVE
+    
+    syntax
+        -- LEFT EXCLUSIVE (rows only in table1)
+SELECT *
+FROM table1 t1
+LEFT JOIN table2 t2
+    ON t1.col = t2.col
+WHERE t2.col IS NULL
+
+UNION
+
+-- RIGHT EXCLUSIVE (rows only in table2)
+SELECT *
+FROM table1 t1
+RIGHT JOIN table2 t2
+    ON t1.col = t2.col
+WHERE t1.col IS NULL;
+
+
+syntax in smss
+    SELECT *
+FROM table1 t1
+FULL OUTER JOIN table2 t2
+    ON t1.col = t2.col
+WHERE t1.col IS NULL
+   OR t2.col IS NULL;
+
+
+   */
+
+SELECT *
+FROM student s
+FULL OUTER JOIN course c
+    ON s.id = c.id
+WHERE s.id IS NULL
+   OR c.id IS NULL;
+
+/*
+
+5. self join
+- it is a regular join but the table is joined with itself
+
+syntax
+    SELECT coulmn(s)
+    FROM table as a
+    JOIN table as b
+    ON a.col_name = b.col_name;
+
+*/
+
+-- example
+
+CREATE TABLE employee(
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
+    manager_id INT
+); 
+
+INSERT INTO employee (id, name, manager_id)
+VALUES
+(101, 'ADAM', 103),
+(102, 'BOB', 104),
+(103, 'CASEY' , NULL),
+(104, 'DONALD', 103);
+
+SELECT * FROM employee;
+
+-- using self join
+
+SELECT * 
+FROM employee as a
+JOIN employee as b
+ON a.id = b.manager_id;
+
+SELECT a.name as manager_name, b.name
+FROM employee as a
+JOIN employee as b
+ON a.id = b.manager_id;
+
+
+
+/*
+6. UNION
+- it is used to combine the result-set of two or more SELECT statements. Gives UNIQUE records.
+
+To use it:
+- every SELECT should have same no. of columns
+- columns must have similar data types
+- columns in every SELECT should be in same order
+
+syntax
+    SELECT column(s) FROM tableA
+    UNION
+    SELECT column(s) FROM tableB
+
+
+    */
+
+    SELECT name FROM  employee
+    UNION
+    SELECT name FROM employee;
+
+
+
+    -- UNION all gives all duplicate values also
+    SELECT name FROM  employee
+    UNION ALL
+    SELECT name FROM employee;
+
+
+
+
+
+/*
+SQL sub queries
+- a subquery or inner query or a nested query is a query within another SQL query
+- it involves 2 select statements
+- there are three ways to write sub query ; we can write it inside
+    1. select
+    2. from
+    3. where; it is most used
+
+syntax inside where
+    SELECT column(s)
+    FROM table_name
+    WHERE col_name operator
+    (subquery);
+
+
+*/
+
+
+CREATE TABLE student5 (
+    rollno INT PRIMARY KEY,
+    name VARCHAR(50),
+    marks INT NOT NULL,
+    grade VARCHAR(1),
+    city VARCHAR(20)
+   
+);
+
+INSERT INTO student5(rollno, name, marks, grade, city)
+VALUES
+(101, 'ANIL', 78, 'C', 'PUNE'),
+(102, 'BHUMIKA', 93, 'A', 'MUMBAI'),
+(103, 'CHETAN', 85, 'B', 'MUMBAI'),
+(104, 'DHRUV', 96, 'A', 'DELHI'),
+(105, 'EMANUEL', 92, 'F', 'DELHI'),
+(106, 'FARAH', 82, 'B', 'DELHI');
+
+
+SELECT * FROM student5;
+
+
+--first step
+SELECT AVG(marks)
+FROM student5;
+
+--second step
+SELECT name, marks
+FROM student5
+WHERE marks > 87.6667;
+
+
+-- gives same result as step 1 and 2
+--to combine both step , we use sub query
+SELECT name, marks
+FROM student5
+WHERE marks > (SELECT AVG(marks) FROM student5);
+
+-- sub queries are dynamic, it changes with the change
+
+
+/* example 2
+
+find the name of all students with even roll numbers.
+
+step 1: find the even roll numbers
+step 2: find the names of students with even roll no
+
+
+*/
+USE innerrjoin;   -- innerrjoin is just the database name
+
+
+-- step 1
+SELECT rollno
+FROM student5
+WHERE rollno % 2 = 0;
+
+   
+-- step 2
+SELECT name 
+FROM student5
+WHERE rollno IN (102,104,106);
+
+
+-- now by using sub query , we can do it in one step and it will be dynamic
+SELECT name, rollno
+FROM student5
+WHERE rollno IN (
+    SELECT rollno
+    FROM student5
+    WHERE rollno % 2 = 0);
+
+
+
+/* example 3
+
+find the max marks from the students of delhi
+
+step 1. find the students of delhi
+step 2. find their max marks using the sublist in step 1
+
+
+--here we are using from 
+
+*/
+SELECT *
+FROM student5
+WHERE city = 'Delhi';
+
+-- using from
+SELECT MAX(marks)
+FROM (SELECT * FROM student5 WHERE city = 'mumbai') AS temp;
+
+-- another easy way
+SELECT MAX(marks)
+FROM student5
+WHERE city = 'mumbai';
+
+
+
+/* example with select
+*/
+
+SELECT (SELECT MAX(marks) FROM student5),name    -- need only one row
+FROM student5;
+
+
+/* 
+
+smss and mysql ; view is same syntax
+
+- a view is a virtual table based on the result-set of an SQL statement.
+
+syntax
+    CREATE VIEW view1 AS
+    SELECT rollno, name FROM student;
+
+    SELECT * FROM view1;
+
+
+* A view always shows up-to-date data. the database engine recreates the view, every time a user queries it.
+
+*/
+    SELECT * FROM student5;
+    GO
+
+    CREATE VIEW view1 AS
+    SELECT rollno, name, marks FROM student5;
+
+    
+
+    SELECT * FROM view1
+    WHERE marks > 90;
+
+
+    -- use go before creating view
+
+-- drop view
+DROP VIEW view1;
+
+
+
+
+
+
+
+
+
+
