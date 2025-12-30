@@ -1514,7 +1514,774 @@ DROP VIEW view1;
 
 
 
+CREATE DATABASE college0;   -- create database
 
+USE college0;   -- use database
+
+CREATE TABLE student (    -- create table
+id int primary key,
+name varchar(50),
+age int not null
+); 
+
+INSERT INTO student VALUES(1,'ALU',26);
+INSERT INTO student VALUES(2,'MAYALU',20);
+
+SELECT * FROM student;
+
+CREATE TABLE student2(
+    rollno INT PRIMARY KEY,
+    name VARCHAR (50),
+    marks INT NOT NULL,
+    grade VARCHAR(1),
+    city VARCHAR(20)
+);
+
+INSERT INTO student2
+(rollno, name, marks, grade, city)
+VALUES
+(101, 'anil', 78, 'C', 'Pune'),
+(102, 'sunil', 89, 'A', 'Dhune'),
+(103, 'kapil', 45, 'B', 'Sune'),
+(104, 'sabin', 68, 'D', 'Kune'),
+(105, 'dhruba', 97, 'A', 'Lune'),
+(106, 'santosh', 85, 'B', 'Jhune');
+
+SELECT * FROM student2;
+
+
+/*
+
+Common Table Expression (CTE)
+
+- a common table expression, or CTE, is a temporary named result set created from a simple SELECT statement that can be used in a subsequent SELECT statement.
+- we can define CTEs by adding a WITH clause directly before SELECT, INSERT, UPDATE, or MERGE statement.
+- the WITH clause can include one or more CTEs separated by commas.
+
+Syntax
+
+With my_cte AS (
+    SELECT a,b,c     -- cte query
+    FROM Table1)
+SELECT a,c        -- main query
+FROM my_cte
+
+*/
+
+SELECT * FROM student
+
+WITH my_cte AS (
+    SELECT * 
+    FROM student
+    )
+SELECT name, age
+FROM my_cte
+
+
+-- we can also use multiple CTEs
+
+WITH my_a AS (
+    SELECT *
+    FROM student
+    ),
+my_b AS (
+    SELECT *
+    FROM student2
+)
+SELECT a.age, b.marks, b.city
+FROM my_a as a, my_b as b
+
+/*
+
+CASE statements/expression
+
+- the case expression goes through conditions and returns a value when the first condition is met (like if-then-else statement). if no conditions are true, it returns the value in the ELSE clause.
+- if there is no else part and no conditions are true, it returns null
+
+syntax: case statements 
+
+CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    WHEN conditionN THEN resultN
+    ELSE other_result
+END;
+
+example:
+
+SELECT customer_id, amount,
+CASE
+    WHEN amount > 100 THEN 'Expensive product'
+    WHEN amount = 100 THEN 'Moderate product'
+    ELSE 'Inexpensive product'
+END AS ProductStatus
+FROM payment
+
+*/
+
+SELECT marks, city,
+CASE 
+    WHEN marks > 70 THEN 'Excellent'
+    WHEN marks < 70 THEN 'Good'
+    ELSE 'MODERATE'
+END AS remarks
+FROM student2
+
+
+/* 
+
+syntax : case expression
+
+CASE Expression
+    WHEN value1 THEN result1
+    WHEN value2 THEN result2
+    WHEN valueN THEN resultN
+    ELSE other_result
+END;
+
+example:
+
+SELECT customer_id,
+CASE amount
+    WHEN 500 THEN 'Prime Customer'
+    WHEN 100 THEN 'Plus product'
+    ELSE 'Regular Customer'
+END AS CustomerStatus
+FROM payment
+
+*/
+
+
+SELECT rollno, 
+CASE marks
+    WHEN 78 THEN 'A'
+    WHEN 45 THEN 'B'
+    ELSE 'C'
+END AS grade_remarks
+FROM student2
+
+SELECT * FROM student2
+
+
+/*
+
+window function
+
+- window functions applies aggregate, ranking and analytic functions over a particular window (set of rows)
+- and OVER clause is used with window functions to define that window.
+
+# in comparison to aggregate functions (sum, avg, etc.)
+
+- aggregate function give output one row per aggregation  ; many to one
+- window function ; the rows maintain their separate identities  ; one to one
+
+syntax:
+
+SELECT column_name(s),
+    fun()over([<PARTITION BY Clause>]
+              [<ORDER BY Clause>]
+              [<ROW or RANGE Clause>])
+FROM table_name
+
+# for fun() - select a function
+1 aggregate functions
+2 ranking functions
+3 value/analytic functions
+
+- and define a window
+1 PARTITION BY
+2 ORDER BY
+3 ROWS
+
+
+
+DEFINITIONS
+1. window function - applies aggregate, ranking and analytic functions over a particular window; for example, sum, avg, or row_number
+2. Expression - is the name of the column that we want the window function operated on. This may not be necessary depending on what window function is used.
+3. OVER - is just to signify that this is a window function
+4. PARTITION BY - divides the rows into partitions so we can specify which rows to use to compute the window function
+5. ORDER BY - is used so that we can order the rows within each partition. This is optional and does not have to be specified
+6. ROWS can be used if we want to further limit the rows within our partition. This is optional and usually not used.
+
+WINDOW FUNCTION TYPES
+-> there is no official division of the SQL window functions into categories but high level we cvan divide into three types:
+
+1. Aggregate 
+- SUM
+- AVG
+- COUNT
+- MIN
+- MAX
+
+2. Ranking
+- ROW_NUMBER
+- RANK
+- DENSE_RANK
+- PERCENT_RANK
+
+3. Value/Analytic
+- LEAD
+- LAG
+- FIRST_VALUE
+- LAST_VALUE
+
+# Example:
+
+*/
+USE college0;
+
+CREATE TABLE practice(
+    new_id INT ,
+    new_cat VARCHAR(50),
+    Total INT,
+    Average FLOAT,
+    COUNT INT,
+    Min INT,
+    Max INT
+    
+);
+SELECT * from practice;
+
+INSERT INTO practice
+(new_id, new_cat, Total, Average, Count, Min, Max)
+VALUES
+(100,'Agni',300,150,2,100,200),
+(200,'Agni',300,150,2,100,200),
+(500,'Dharti',1200,600,2,500,700),
+(700,'Dharti',1200,600,2,500,700),
+(200,'Vayu',1000,333.33333,3,200,500),
+(300,'Vayu',1000,333.33333,3,200,500),
+(500,'Vayu',1000,333.33333,3,200,500);
+
+-- here is window function for aggregate
+
+SELECT new_id, new_cat,
+SUM(new_id) OVER( PARTITION BY new_cat ORDER BY new_id) AS "Total",
+AVG(new_id) OVER( PARTITION BY new_cat ORDER BY new_id) AS "Average",
+COUNT(new_id) OVER( PARTITION BY new_cat ORDER BY new_id) AS "Count",
+MIN(new_id) OVER( PARTITION BY new_cat ORDER BY new_id) AS "Min",
+MAX(new_id) OVER( PARTITION BY new_cat ORDER BY new_id) AS "Max"
+
+FROM practice
+
+
+-- rows
+
+SELECT new_id, new_cat,
+SUM(new_id) OVER(ORDER BY new_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "Total",
+AVG(new_id) OVER(ORDER BY new_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "Average",
+COUNT(new_id) OVER(ORDER BY new_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "Count",
+MIN(new_id) OVER(ORDER BY new_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "Min",
+MAX(new_id) OVER(ORDER BY new_id ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS "Max"
+FROM practice
+
+
+-- for ranking
+
+SELECT new_id,
+ROW_NUMBER() OVER( ORDER BY new_id) AS "ROW_NUMBER",
+RANK() OVER( ORDER BY new_id) AS "RANK",
+DENSE_RANK() OVER( ORDER BY new_id) AS "DENSE_RANK",
+PERCENT_RANK() OVER( ORDER BY new_id) AS "PERCENT_RANK"
+FROM practice
+
+-- for value/analytic
+-- if you want the single last value from column, use:"ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING"
+
+SELECT new_id,
+FIRST_VALUE(new_id) OVER(ORDER BY new_id) AS "FIRST_VALUE",
+LAST_VALUE(new_id) OVER(ORDER BY new_id) AS "LAST_VALUE",
+LEAD(new_id) OVER(ORDER BY new_id) AS "LEAD",
+LAG(new_id) OVER(ORDER BY new_id) AS "LAG"
+FROM practice
+
+
+-- interview   question 
+-- Q1. offset the LEAD and LAG values by 2 in the output columns ?
+
+SELECT new_id,
+LEAD(new_id,2) OVER( ORDER BY new_id) AS "LEAD_by_2",
+LAG(new_id,2) OVER( ORDER BY new_id) AS "LAG_by_2"
+FROM practice
+
+----------------------------------------------------------
+
+/*
+
+ sql performance
+ skills
+ 
+ 1. indexes
+ 2. query optimisation
+ 3. execution plans (basic)
+
+
+ for this i have make a step by step example:
+
+ */
+
+ -- improving slow sql query in ssms (Step by step)
+
+ -- Step 0: Create sample table (run once)
+
+DROP TABLE IF EXISTS Cars;
+GO
+
+CREATE TABLE Cars (
+    CarID INT IDENTITY PRIMARY KEY,
+    Brand VARCHAR(50),
+    Year INT,
+    Fuel VARCHAR(20),
+    SellingPrice INT
+);
+GO
+
+-- insert sample data
+-- these creates 50,000 rows so performance differences are visible
+
+INSERT INTO Cars (Brand, Year, Fuel, SellingPrice)
+SELECT
+    CASE WHEN number % 3 = 0 THEN 'Toyota'
+         WHEN number % 3 = 1 THEN 'Honda'
+         ELSE 'BMW' END,
+    2015 + (number % 8),
+    CASE WHEN number % 2 = 0 THEN 'Petrol' ELSE 'Diesel' END,
+    5000 + (number * 10)
+FROM master..spt_values
+WHERE type = 'P' AND number < 50000;
+GO
+
+
+-- step 1 : run a slow query (No index)
+
+SELECT *
+FROM Cars
+WHERE Brand = 'Toyota';
+
+/* what happens here
+
+- sql server performs a table scan
+- reads every row
+- slow on large tables
+
+*/
+
+-- step 2 : check execution plan
+/*
+ in ssms
+ 1. press ctrl + M ( include actual execution plan)
+ 2. run the query again
+
+ */
+
+ /*
+ what you see
+ 1. table scan
+ 2. high percentage cost
+
+ table scan = performance problem
+ 
+ */
+
+ -- step 3 : reduce selected columns
+
+ -- bad
+
+SELECT *
+FROM Cars
+WHERE Brand = 'Toyota';
+
+
+
+-- good
+-- less data read from disk
+-- still a scan, but cheaper
+
+SELECT Brand, Year, SellingPrice
+FROM Cars
+WHERE Brand = 'Toyota';
+
+
+-- step 4: add an index (most important step)
+
+CREATE INDEX idx_cars_brand
+ON Cars(Brand);
+GO
+
+-- re run query
+-- exexutio plan now:
+-- 1. index seek
+-- 2. much lower cost
+-- massive performance improvement
+
+SELECT Brand, Year, SellingPrice
+FROM Cars
+WHERE Brand = 'Toyota';
+
+/*
+
+step 5: covering index (avoid key lookup)
+
+if execution plan shows:
+- index seek + key lookup (yellow warning)
+
+*/
+
+-- create a covering index:
+
+CREATE INDEX idx_cars_brand_cover
+ON Cars(Brand)
+INCLUDE (Year, SellingPrice);
+GO
+
+/*
+
+result
+- only index seek
+- no lookup
+
+fastest version
+
+*/
+
+--step 6 : avoid functions on indexed columns
+
+--bad (index NOT used):
+SELECT *
+FROM Cars
+WHERE YEAR(Year) = 2020;
+
+
+
+-- good
+-- functions on indexed columns disable index usage
+
+SELECT *
+FROM Cars
+WHERE Year = 2020;
+
+
+-- step 7: subquery vs exists
+-- create another table:
+
+CREATE TABLE LuxuryBrands (
+    Brand VARCHAR(50)
+);
+
+INSERT INTO LuxuryBrands VALUES ('BMW');
+GO
+
+
+-- slower
+SELECT *
+FROM Cars
+WHERE Brand IN (SELECT Brand FROM LuxuryBrands);
+
+-- faster
+-- exists stops searching once a match is found
+SELECT *
+FROM Cars c
+WHERE EXISTS (
+    SELECT 1
+    FROM LuxuryBrands l
+    WHERE l.Brand = c.Brand
+);
+
+
+-- step 8: join instead of subquery
+-- usually easier for optimizer
+-- cleaner and faster
+SELECT c.*
+FROM Cars c
+JOIN LuxuryBrands l
+ON c.Brand = l.Brand;
+
+
+-- step 9 : measure performance (before & after)
+SET STATISTICS IO ON;
+SET STATISTICS TIME ON;
+
+SELECT Brand, Year, SellingPrice
+FROM Cars
+WHERE Brand = 'Toyota';
+
+SET STATISTICS IO OFF;
+SET STATISTICS TIME OFF;
+
+-- look for:
+--1. logical reads
+--2. cpu time
+
+
+-- step 10 : update statistics (SQL Server-Specific)
+UPDATE STATISTICS Cars;
+-- helps optimizer choose better plans
+
+
+
+-- final answer
+-- i improve a slow query in ssms by enabling the actual execution plan, identifying table scans or expensive operators, adding appropriate indexes on filter and join columns, reducing selected columns, rewriting subqueries using joins or EXISTS, and validating improvements using IO and time statistics.
+
+/*
+Quick Checklist (Memorise)
+
+✔ Use Ctrl + M
+✔ Prefer Index Seek
+✔ Avoid SELECT *
+✔ Create covering indexes
+✔ Avoid functions in WHERE
+✔ Use JOIN / EXISTS
+✔ Check IO & TIME
+
+*/
+
+
+
+
+
+
+
+----------------------------------------------------------
+
+
+/*
+
+How to Read a SQL Server Execution Plan (SSMS) – Step by Step
+
+Step 1: Generate a Real Execution Plan in SSMS
+
+*/
+
+SET STATISTICS IO ON;
+SET STATISTICS TIME ON;
+GO
+
+SELECT Brand, Year, SellingPrice
+FROM Cars
+WHERE Brand = 'Toyota';
+GO
+
+/*
+
+Before running:
+👉 Press Ctrl + M (Include Actual Execution Plan)
+
+After execution:
+
+Click the Execution Plan tab
+
+*/
+
+/*
+Step 2: Reading Direction (VERY IMPORTANT)
+
+👉 SQL Server reads execution plans from RIGHT → LEFT
+
+Even though arrows point left, data flows right to left.
+
+*/
+
+/*
+Step 3: Typical Execution Plan (Before Index)
+
+You will usually see ONE big operator:
+
+🔴 Table Scan (Cars) – 100%
+
+What you see in SSMS
+
+Icon: 📄 table
+
+Name: Table Scan
+
+Cost: ~100%
+
+Meaning
+
+SQL Server read every row in Cars
+
+No useful index exists
+
+Very slow for large tables
+
+Why it’s bad
+
+High logical reads
+
+High CPU usage
+
+👉 This is your first red flag
+
+*/
+
+
+-- Step 4: After Adding an Index
+
+CREATE INDEX idx_cars_brand
+ON Cars(Brand);
+
+-- Re-run the query.
+
+/*
+Step 5: New Execution Plan (Much Better)
+
+Now you’ll usually see TWO operators:
+
+*/
+Index Seek → Key Lookup
+
+
+/*
+
+Let’s break them down.
+
+🟢 1. Index Seek (idx_cars_brand) – ~20%
+
+What you see
+
+Icon: 🔍
+
+Name: Index Seek
+
+Predicate: Brand = 'Toyota'
+
+Meaning
+
+SQL Server jumps directly to matching rows
+
+Uses B-tree index
+
+Very fast
+
+✅ This is what you WANT
+
+🟡 2. Key Lookup (Clustered) – ~80%
+
+What you see
+
+Icon: 🔑
+
+Name: Key Lookup (Clustered)
+
+Warning symbol ⚠️ (often)
+
+Meaning
+
+Index contains only Brand
+
+SQL Server must go back to the table
+
+Fetch Year, SellingPrice row-by-row
+
+Why it can be bad
+
+Happens once per matching row
+
+Becomes slow when many rows match
+
+👉 This is a yellow warning, not always bad, but risky.
+
+*/
+
+
+-- Step 6: Fixing the Key Lookup (Covering Index)
+
+CREATE INDEX idx_cars_brand_cover
+ON Cars(Brand)
+INCLUDE (Year, SellingPrice);
+
+-- rerun the query
+
+
+/*
+
+Step 7: Final (Best) Execution Plan
+
+Now you see:
+
+🟢 Index Seek (Covering Index) – ~100%
+
+What changed
+
+No Key Lookup
+
+All required columns are in the index
+
+One operator only
+
+This is optimal
+
+✅ Fast
+✅ Low IO
+✅ Low CPU
+
+*/
+
+
+/*
+
+Step 8: Hover Over Operators (DO THIS IN SSMS)
+
+When you hover over an operator, look for:
+
+1️ Actual vs Estimated Rows
+
+*/
+
+Estimated Rows: 10
+Actual Rows: 50,000
+
+
+-- Huge difference = bad statistics or bad index
+-- 2️ Predicate
+
+Shows filter condition:
+-- Confirms index is used correctly.
+
+--3️ Cost Percentage
+
+-- Highest cost operator = optimisation target
+
+-- Focus there first
+
+
+/*
+
+Step 9: Common Operators You WILL See in SSMS
+Operator	Meaning	Good/Bad
+Table Scan	Reads entire table	❌ Bad (large tables)
+Index Scan	Reads whole index	⚠️ Sometimes ok
+Index Seek	Targeted lookup	✅ Best
+Key Lookup	Fetch missing columns	⚠️ Fix if frequent
+Nested Loops	Small joins	✅
+Hash Match	Large joins	⚠️
+Sort	ORDER BY	⚠️ Costly
+*/
+
+
+-- Step 10: Using IO Stats to Confirm
+-- After query runs, check Messages tab:
+
+Table 'Cars'. Logical reads 1200
+
+-- After optimisation:
+Logical reads 50
+
+-- 📉 Lower reads = faster query
+
+
+
+/*
+
+How to Explain This in an Interview (Perfect Answer)
+
+I enable the actual execution plan in SSMS, read it from right to left, look for table scans or expensive operators, check row estimates versus actuals, replace scans with index seeks by adding appropriate indexes, remove key lookups using covering indexes, and confirm improvements using IO and execution time statistics.
+
+One-Sentence Rule (Memorise)
+
+Table Scan → Index Seek → Covering Index = performance improvement path
+
+*/
 
 
 
